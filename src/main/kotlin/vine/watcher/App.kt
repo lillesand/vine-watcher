@@ -3,50 +3,32 @@
  */
 package vine.watcher
 
-import org.apache.http.client.entity.UrlEncodedFormEntity
+import com.beust.klaxon.Klaxon
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicNameValuePair
+
 
 class App {
 
+    private val klaxon = Klaxon()
     private val httpclient = HttpClients.createDefault()
 
-    fun csrfToken(): String {
-        val httpGet = HttpGet("https://www.vinmonopolet.no")
-        val response  = httpclient.execute(httpGet)
+    fun getStoreStatus(articleId: String): VinmonopoletAvailabilityResponse? {
+        val uri = URIBuilder("https://www.vinmonopolet.no/api/products/${articleId}/stock?pageSize=10&currentPage=0&fields=BASIC&latitude=59.9492182&longitude=10.7683369")
+
+        val response = httpclient.execute(HttpGet(uri.build()))
+
         response.use {
-            return it.entity.content.bufferedReader().readLines()
-                    .filter { it.contains("CSRFToken") }
-                    .map { it.substringAfter("\"").substringBefore("\"") }
-                    .first()
+            return klaxon.parse<VinmonopoletAvailabilityResponse>(it.entity.content)
         }
     }
 
-    fun availability(articleId: String, postalCode: String, csrfToken: String): String {
-        val uri = URIBuilder("https://www.vinmonopolet.no/store-pickup/${articleId}/pointOfServices")
-
-        val params = UrlEncodedFormEntity(listOf(
-                BasicNameValuePair("CSRFToken", csrfToken),
-                BasicNameValuePair("locationQuery", postalCode),
-                BasicNameValuePair("entryNumber", "") // No entryNumber, no response!
-        ))
-        val httpPost = HttpPost(uri.build())
-        httpPost.entity = params
-        val response = httpclient.execute(httpPost)
-
-        response.use {
-            return it.entity.content.bufferedReader().readText()
-        }
-    }
 
 }
 
 fun main(args: Array<String>) {
     val app = App()
-    val token = app.csrfToken()
-    val availability = app.availability("8278501", "0484", token)
-    println(availability)
+    val availability = app.getStoreStatus("8278501")
+    print(availability?.stores?.filter { it.distance() != null && it.distance()!! < 1 }?.map { it.friendlyPrint() }?.joinToString("\n"))
 }
