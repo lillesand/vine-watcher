@@ -4,10 +4,9 @@
 package vine.watcher
 
 import kotlin.test.Test
-import kotlin.test.assertNotNull
 
-class AppTest {
+class VMPClientTest {
     @Test fun testAppHasAGreeting() {
-        val classUnderTest = App()
+        val classUnderTest = VMPClient()
     }
 }

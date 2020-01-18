@@ -1,9 +1,10 @@
-ext {
-    set("kotlin_version", "1.3.60")
-}
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin.
     id("org.jetbrains.kotlin.jvm") version "1.3.60"
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 repositories {
@@ -17,6 +18,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 
     implementation("com.beust", "klaxon", "5.0.1")
+
+    implementation("com.github.seratch", "jslack", "3.3.0")
 
     implementation("org.apache.httpcomponents", "httpclient", "4.5.10")
 }
