@@ -12,7 +12,7 @@ class App {
 
     private val maxTravelKms = 10
     private val wines = mapOf(
-            "8278501" to "Zind-Humbrech Brand Grand Cru",
+            "8278501" to "Zind-Humbrecht Riesling Brand Grand Cru 2017",
             "11416405" to "Penfolds St. Henri Shiraz 2006"
     )
 
