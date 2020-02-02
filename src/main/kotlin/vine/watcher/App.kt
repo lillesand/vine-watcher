@@ -21,10 +21,15 @@ class App {
             WineStatus(entry.key, vmpClient.getStoreStatus(entry.key).prettyPrintNearest(3, maxTravelKms))
         }
 
-        newWineStatus.filter {
+        val winesToPost = newWineStatus.filter {
             previousWineStatus.find { previousIt -> it.articleId == previousIt.articleId }?.status != it.status
-        }.forEach{ slackPoster.post(wines[it.articleId] ?: error("Fant ikke ${it.articleId}. Ikke bra."), it.status) }
+        }
 
+        println("Posting ${winesToPost.size} updated wines to Slack")
+
+        winesToPost.forEach{ slackPoster.post(wines[it.articleId] ?: error("Fant ikke ${it.articleId}. Ikke bra."), it.status) }
+
+        println("Saving updated wine status: ${newWineStatus.joinToString("\n")}")
         winesRepository.saveWineStatus(newWineStatus)
     }
 
