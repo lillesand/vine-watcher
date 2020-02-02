@@ -27,7 +27,7 @@ class App {
                     .iconEmoji(":wine_glass:")
                     .username("Vinolini")
                     .build()
-            val result = slack.send(url, payload)
+            slack.send(url, payload)
         }
     }
 
