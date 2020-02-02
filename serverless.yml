@@ -1,0 +1,74 @@
+service: vine-watcher
+
+# You can pin your service to only deploy with a specific Serverless version
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: java11
+
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+package:
+  artifact: build/libs/vine-watcher-dev-all.jar
+
+functions:
+  winewatcher:
+    handler: vine.watcher.Handler
+    memorySize: 512
+    timeout: 60
+    events:
+     - schedule: rate(1 hour)
+    environment:
+      SLACK_WEBHOOK: ${opt:slack-webhook}
+
+resources:
+  Resources:
+    vinewatcherWines:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: vinewatcherWines
+        AttributeDefinitions:
+          - AttributeName: ArticleId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ArticleId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
