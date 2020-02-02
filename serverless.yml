@@ -48,18 +48,9 @@ functions:
 resources:
   Resources:
     vinewatcherWines:
-      Type: AWS::DynamoDB::Table
+      Type: AWS::S3::Bucket
       Properties:
-        TableName: vinewatcherWines
-        AttributeDefinitions:
-          - AttributeName: ArticleId
-            AttributeType: S
-        KeySchema:
-          - AttributeName: ArticleId
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+        BucketName: "vinewatcher-${opt:stage}"
 
 # you can add CloudFormation resource templates here
 #resources:

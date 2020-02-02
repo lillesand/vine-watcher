@@ -14,13 +14,13 @@ class VMPClient {
     private val klaxon = Klaxon()
     private val httpclient = HttpClients.createDefault()
 
-    fun getStoreStatus(articleId: String): VinmonopoletAvailabilityResponse? {
+    fun getStoreStatus(articleId: String): VinmonopoletAvailabilityResponse {
         val uri = URIBuilder("https://www.vinmonopolet.no/api/products/${articleId}/stock?pageSize=10&currentPage=0&fields=BASIC&latitude=59.9492182&longitude=10.7683369")
 
         val response = httpclient.execute(HttpGet(uri.build()))
 
         response.use {
-            return klaxon.parse<VinmonopoletAvailabilityResponse>(it.entity.content)
+            return klaxon.parse<VinmonopoletAvailabilityResponse>(it.entity.content)!!
         }
     }
 

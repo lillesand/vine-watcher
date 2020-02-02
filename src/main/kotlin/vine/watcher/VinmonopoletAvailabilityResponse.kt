@@ -1,21 +1,16 @@
 package vine.watcher
 
 data class VinmonopoletAvailabilityResponse(
-    val pagination: Pagination,
     val stores: List<Store>
 ) {
-    data class Pagination(
-        val currentPage: Int,
-        val pageSize: Int,
-        val totalPages: Int,
-        val totalResults: Int
-    )
+
+    fun prettyPrintNearest(maxNumber: Int, maxTravelKms: Int): String {
+        return stores.filter { it.distance() != null && it.distance()!! < maxTravelKms }.take(maxNumber).joinToString("\n") { it.friendlyPrint() }
+    }
 
     data class Store(
-        val clickAndCollect: Boolean,
         val displayName: String,
         val formattedDistance: String,
-        val name: String,
         val stockInfo: StockInfo
     ) {
         data class StockInfo(
@@ -29,5 +24,6 @@ data class VinmonopoletAvailabilityResponse(
         fun friendlyPrint(): String {
             return "$displayName - ${stockInfo.stockLevel} flasker ($formattedDistance unna)"
         }
+
     }
 }
