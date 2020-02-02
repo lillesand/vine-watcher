@@ -5,3 +5,4 @@
 build
 .idea
 .serverless
+deploy.sh
