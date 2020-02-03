@@ -11,7 +11,8 @@ class App {
             "8278501" to "Zind-Humbrecht Riesling Brand Grand Cru 2017",
             "10802701" to "Faiveley Mercurey Premier Cru Clos du Roy 2017",
             "10802801" to "Faiveley Mercurey La Framboisère 2017",
-            "11416405" to "Penfolds St. Henri Shiraz 2006"
+            "11416405" to "Penfolds St. Henri Shiraz 2006",
+            "5089801" to "Viña Tondonia Gran Reserva Rosado 2009"
     )
 
     fun postStatus() {
