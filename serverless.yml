@@ -38,6 +38,7 @@ functions:
      - schedule: rate(1 hour)
     environment:
       SLACK_WEBHOOK: ${opt:slack-webhook}
+      STAGE: ${opt:stage}
 
 resources:
   Resources:

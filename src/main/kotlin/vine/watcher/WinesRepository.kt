@@ -7,7 +7,7 @@ import com.beust.klaxon.Klaxon
 
 class WinesRepository {
 
-    private val environment = System.getProperty("STAGE") ?: "local"
+    private val environment = System.getenv("STAGE") ?: "local"
     private val bucketName = "vinewatcher-$environment"
     private val winesFileName = "wines.json"
 
