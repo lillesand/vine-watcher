@@ -12,6 +12,11 @@ class App {
             "10802701" to "Faiveley Mercurey Premier Cru Clos du Roy 2017",
             "10802801" to "Faiveley Mercurey La Framboisère 2017",
             "11416405" to "Penfolds St. Henri Shiraz 2006",
+            "5089801" to "Viña Tondonia Gran Reserva Rosado 2009",
+            "7879101" to "Dom. de la Côte Memorious Pinot Noir 2017",
+            "7879201" to "Dom. de la Côte Bloom's Field Pinot Noir 2017",
+            "7879001" to "Dom. de la Côte Sta. Rita Hills Pinot Noir 2016",
+            "7879301" to "La Côte Pinot Noir 2017",
             "5089801" to "Viña Tondonia Gran Reserva Rosado 2009"
     )
 
