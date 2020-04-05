@@ -3,6 +3,7 @@
  */
 package vine.watcher
 
+import vine.watcher.vinmonopolet.VMPClient
 import kotlin.test.Test
 
 class VMPClientTest {

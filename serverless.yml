@@ -31,7 +31,7 @@ package:
 
 functions:
   winewatcher:
-    handler: vine.watcher.Handler
+    handler: vine.watcher.WinePosterLambda
     memorySize: 512
     timeout: 60
     events:
@@ -39,6 +39,16 @@ functions:
     environment:
       SLACK_WEBHOOK: ${opt:slack-webhook}
       STAGE: ${opt:stage}
+
+  event_receive:
+    handler: vine.watcher.SlackCommandRequestHandler
+    events:
+      - http:
+          path: event/receive
+          method: post
+          cors: true
+    environment:
+      SLACK_SIGNING_SECRET: ${opt:slack-signing-secret}
 
 resources:
   Resources:

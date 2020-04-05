@@ -1,5 +1,7 @@
 package vine.watcher
 
+import vine.watcher.vinmonopolet.VMPClient
+
 class App {
 
     private val vmpClient = VMPClient()

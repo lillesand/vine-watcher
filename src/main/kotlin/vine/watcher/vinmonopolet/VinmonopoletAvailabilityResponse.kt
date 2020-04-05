@@ -1,4 +1,4 @@
-package vine.watcher
+package vine.watcher.vinmonopolet
 
 data class VinmonopoletAvailabilityResponse(
     val stores: List<Store>

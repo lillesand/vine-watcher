@@ -42,7 +42,6 @@ class WinesRepository {
 
 
 fun main() {
-
     val repo = WinesRepository()
     println(repo.previousWineStatus())
     repo.saveWineStatus(listOf(WineStatus("test", "fest")))
