@@ -16,21 +16,22 @@ provider:
       Action:
         - "s3:ListBucket"
       Resource: { "Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "WineWatcherBucket" } ] ] }
+    - Effect: "Allow"
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:GetQueueAttributes"
+        - "sqs:GetQueueUrl"
+        - "sqs:ListQueues"
+      Resource:
+        Fn::GetAtt:
+          - SlackCommandQueue
+          - Arn
 
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
-
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
-
-# you can add packaging information here
 package:
   artifact: build/libs/vine-watcher-dev-all.jar
 
 functions:
-  winewatcher:
+  vinewatcher-slack-poster:
     handler: vine.watcher.WinePosterLambda
     memorySize: 512
     timeout: 60
@@ -40,8 +41,8 @@ functions:
       SLACK_WEBHOOK: ${opt:slack-webhook}
       STAGE: ${opt:stage}
 
-  event_receive:
-    handler: vine.watcher.SlackCommandRequestHandler
+  vinewatcher-slack-webhook:
+    handler: vine.watcher.slackhook.SlackCommandRequestHandler
     events:
       - http:
           path: event/receive
@@ -49,6 +50,21 @@ functions:
           cors: true
     environment:
       SLACK_SIGNING_SECRET: ${opt:slack-signing-secret}
+      QUEUE_URL:
+        Ref: SlackCommandQueue
+
+  vinewatcher-process-commands:
+    handler: vine.watcher.queue.CommandProcessor
+    memorySize: 512
+    timeout: 20
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - SlackCommandQueue
+              - Arn
+    environment:
+      SLACK_WEBHOOK: ${opt:slack-webhook}
 
 resources:
   Resources:
@@ -56,4 +72,8 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: "vinewatcher-${opt:stage}"
+    SlackCommandQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: "SlackCommandQueue-${opt:stage}"
 

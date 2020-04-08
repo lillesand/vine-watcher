@@ -1,15 +1,20 @@
 package vine.watcher.vinmonopolet
 
 data class VinmonopoletSearchResponse(
-        val productSearchResult: ProductSearchResult,
-        val searchType: String
+        val productSearchResult: ProductSearchResult
 ) {
-
     data class ProductSearchResult(
-            val freeTextSearch: String,
-            val products: List<Product>
+            val pagination: Pagination,
+            val products: List<Product>,
+            val sorts: List<Sort>
     ) {
-
+        data class Pagination(
+            val currentPage: Int,
+            val pageSize: Int,
+            val sort: String,
+            val totalPages: Int,
+            val totalResults: Int
+        )
         data class Product(
                 val availability: Availability,
                 val availableForPickup: Boolean,
@@ -17,13 +22,11 @@ data class VinmonopoletSearchResponse(
                 val code: String,
                 val images: List<Image>,
                 val inStockSupplier: Boolean,
-                val isGoodFor: List<IsGoodFor>,
                 val litrePrice: LitrePrice,
                 val main_category: MainCategory,
                 val main_country: MainCountry,
                 val main_producer: MainProducer,
                 val name: String,
-                val nyhet: Boolean,
                 val price: Price,
                 val product_selection: String,
                 val status: String,
@@ -60,14 +63,11 @@ data class VinmonopoletSearchResponse(
                 val url: String
             )
 
-            data class IsGoodFor(
-                val code: String
-            )
-
             data class LitrePrice(
                 val currencyIso: String,
                 val formattedValue: String,
                 val priceType: String,
+                val readableValue: String,
                 val value: Double
             )
 
@@ -87,6 +87,7 @@ data class VinmonopoletSearchResponse(
                 val currencyIso: String,
                 val formattedValue: String,
                 val priceType: String,
+                val readableValue: String,
                 val value: Double
             )
 
@@ -105,5 +106,10 @@ data class VinmonopoletSearchResponse(
             )
         }
 
+        data class Sort(
+            val code: String,
+            val name: String,
+            val selected: Boolean
+        )
     }
 }

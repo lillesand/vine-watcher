@@ -2,11 +2,9 @@ package vine.watcher
 
 import vine.watcher.vinmonopolet.VMPClient
 
-class App {
-
-    private val vmpClient = VMPClient()
-    private val slackPoster = SlackPoster()
-    private val winesRepository = WinesRepository()
+class App(private val vmpClient: VMPClient = VMPClient(),
+          private val slackPoster: SlackPoster = SlackPoster(),
+          private val winesRepository: WinesRepository = WinesRepository()) {
 
     private val maxTravelKms = 10
     private val wines = mapOf(
@@ -35,7 +33,7 @@ class App {
 
         println("Posting ${winesToPost.size} updated wines to Slack")
 
-        winesToPost.forEach{ slackPoster.post(wines[it.articleId] ?: error("Fant ikke ${it.articleId}. Ikke bra."), it.status) }
+        winesToPost.forEach{ slackPoster.postWine(wines[it.articleId] ?: error("Fant ikke ${it.articleId}. Ikke bra."), it.status) }
 
         println("Saving updated wine status: ${newWineStatus.joinToString("\n")}")
         winesRepository.saveWineStatus(newWineStatus)
