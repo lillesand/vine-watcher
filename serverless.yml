@@ -10,14 +10,6 @@ provider:
   iamRoleStatements:
     - Effect: "Allow"
       Action:
-        - "s3:*Object"
-      Resource: { "Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "WineWatcherBucket" }, "/*" ] ] }
-    - Effect: "Allow"
-      Action:
-        - "s3:ListBucket"
-      Resource: { "Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "WineWatcherBucket" } ] ] }
-    - Effect: "Allow"
-      Action:
         - "sqs:SendMessage"
         - "sqs:GetQueueAttributes"
         - "sqs:GetQueueUrl"
@@ -25,6 +17,18 @@ provider:
       Resource:
         Fn::GetAtt:
           - SlackCommandQueue
+          - Arn
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:Query"
+        - "dynamodb:Scan"
+        - "dynamodb:GetItem"
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:DeleteItem"
+      Resource:
+        Fn::GetAtt:
+          - WineTable
           - Arn
 
 package:
@@ -50,6 +54,7 @@ functions:
           cors: true
     environment:
       SLACK_SIGNING_SECRET: ${opt:slack-signing-secret}
+      STAGE: ${opt:stage}
       QUEUE_URL:
         Ref: SlackCommandQueue
 
@@ -64,16 +69,26 @@ functions:
               - SlackCommandQueue
               - Arn
     environment:
+      STAGE: ${opt:stage}
       SLACK_WEBHOOK: ${opt:slack-webhook}
 
 resources:
   Resources:
-    WineWatcherBucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: "vinewatcher-${opt:stage}"
     SlackCommandQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: "SlackCommandQueue-${opt:stage}"
+    WineTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: "vinewatcher-${opt:stage}"
+        AttributeDefinitions:
+          - AttributeName: articleId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: articleId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 

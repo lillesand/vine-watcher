@@ -23,8 +23,8 @@ class App(private val vmpClient: VMPClient = VMPClient(),
     fun postStatus() {
         val previousWineStatus = winesRepository.previousWineStatus()
 
-        val newWineStatus = wines.map { entry ->
-            WineStatus(entry.key, vmpClient.getStoreStatus(entry.key).prettyPrintNearest(3, maxTravelKms))
+        val newWineStatus = previousWineStatus.map {
+            it.copy(status = vmpClient.getStoreStatus(it.articleId).prettyPrintNearest(3, maxTravelKms))
         }
 
         val winesToPost = newWineStatus.filter {
@@ -33,10 +33,10 @@ class App(private val vmpClient: VMPClient = VMPClient(),
 
         println("Posting ${winesToPost.size} updated wines to Slack")
 
-        winesToPost.forEach{ slackPoster.postWine(wines[it.articleId] ?: error("Fant ikke ${it.articleId}. Ikke bra."), it.status) }
+        winesToPost.forEach{ slackPoster.postWine(it.name, it.status!!) }
 
         println("Saving updated wine status: ${newWineStatus.joinToString("\n")}")
-        winesRepository.saveWineStatus(newWineStatus)
+        winesRepository.updateWineStatus(newWineStatus)
     }
 
 }

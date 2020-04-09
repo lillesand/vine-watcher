@@ -1,49 +1,38 @@
 package vine.watcher
 
-import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.AmazonS3ClientBuilder
-import com.amazonaws.services.s3.model.AmazonS3Exception
-import com.beust.klaxon.Klaxon
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
+import com.amazonaws.services.dynamodbv2.model.*
 
 class WinesRepository {
 
+    private var dynamodb: AmazonDynamoDB = AmazonDynamoDBClientBuilder.defaultClient()
+
     private val environment = System.getenv("STAGE") ?: "local"
-    private val bucketName = "vinewatcher-$environment"
-    private val winesFileName = "wines.json"
+    private val tableName = "vinewatcher-$environment"
 
-    private val klaxon = Klaxon()
-    private val client: AmazonS3
 
-    init {
-        val builder = AmazonS3ClientBuilder.standard()
-        builder.region = "us-east-1"
-        this.client = builder.build()
+    fun createWine(wineRequest: WineStatus) {
+        dynamodb.putItem(tableName, mapOf(
+                Pair("articleId", AttributeValue(wineRequest.articleId)),
+                Pair("name", AttributeValue(wineRequest.name))
+        ))
     }
 
     fun previousWineStatus(): List<WineStatus> {
-        try {
-            val json = client.getObjectAsString(bucketName, winesFileName) ?: return emptyList()
-            return klaxon.parseArray(json) ?: emptyList()
-        } catch (e: AmazonS3Exception) {
-            if (e.errorCode == "NoSuchKey") {
-                return emptyList();
-            }
-            throw e;
+        return dynamodb.scan(tableName, listOf("articleId", "name", "status")).items.map {
+            WineStatus(it["articleId"]?.s!!, it["name"]?.s!!, it["status"]?.s)
         }
     }
 
-
-    fun saveWineStatus(wineStatus: List<WineStatus>) {
-        val jsonString = klaxon.toJsonString(wineStatus)
-        client.putObject(bucketName, winesFileName, jsonString)
+    fun updateWineStatus(wineStatuses: List<WineStatus>) {
+        wineStatuses.forEach {
+            dynamodb.updateItem(tableName,
+                    mapOf(Pair("articleId", AttributeValue(it.articleId))),
+                    mapOf(Pair("status", AttributeValueUpdate(AttributeValue(it.status), AttributeAction.PUT))))
+        }
     }
 
 }
 
-
-fun main() {
-    val repo = WinesRepository()
-    println(repo.previousWineStatus())
-    repo.saveWineStatus(listOf(WineStatus("test", "fest")))
-    println(repo.previousWineStatus())
-}
+data class WineStatus(val articleId: String, val name: String, val status: String?)
