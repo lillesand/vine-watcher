@@ -5,8 +5,7 @@ data class VinmonopoletSearchResponse(
 ) {
     data class ProductSearchResult(
             val pagination: Pagination,
-            val products: List<Product>,
-            val sorts: List<Sort>
+            val products: List<Product>
     ) {
         data class Pagination(
             val currentPage: Int,
@@ -31,7 +30,6 @@ data class VinmonopoletSearchResponse(
                 val product_selection: String,
                 val status: String,
                 val stock: Stock,
-                val style: Style,
                 val url: String,
                 val volume: Volume,
                 val volumePricesFlag: Boolean
@@ -72,15 +70,15 @@ data class VinmonopoletSearchResponse(
             )
 
             data class MainCategory(
-                val name: String
+                val name: String?
             )
 
             data class MainCountry(
-                val name: String
+                val name: String?
             )
 
             data class MainProducer(
-                val name: String
+                val name: String?
             )
 
             data class Price(
@@ -96,20 +94,11 @@ data class VinmonopoletSearchResponse(
                 val stockLevelStatus: String
             )
 
-            data class Style(
-                val name: String
-            )
-
             data class Volume(
                 val formattedValue: String,
                 val value: Double
             )
         }
 
-        data class Sort(
-            val code: String,
-            val name: String,
-            val selected: Boolean
-        )
     }
 }
