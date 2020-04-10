@@ -33,10 +33,10 @@ class App(private val vmpClient: VMPClient = VMPClient(),
 
         println("Posting ${winesToPost.size} updated wines to Slack")
 
-        winesToPost.forEach{ slackPoster.postWine(it.name, it.status!!) }
+        winesToPost.forEach { slackPoster.postWine(it.name, it.status!!) }
 
         println("Saving updated wine status: ${newWineStatus.joinToString("\n")}")
-        winesRepository.updateWineStatus(newWineStatus)
+        winesRepository.updateWineStatus(winesToPost)
     }
 
 }

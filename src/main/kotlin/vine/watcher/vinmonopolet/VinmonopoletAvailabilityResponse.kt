@@ -5,7 +5,11 @@ data class VinmonopoletAvailabilityResponse(
 ) {
 
     fun prettyPrintNearest(maxNumber: Int, maxTravelKms: Int): String {
-        return stores.filter { it.distance() != null && it.distance()!! < maxTravelKms }.take(maxNumber).joinToString("\n") { it.friendlyPrint() }
+        val nearestStores = stores.filter { it.distance() != null && it.distance()!! < maxTravelKms }.take(maxNumber)
+        if (nearestStores.isEmpty()) {
+            return "Ingen tilgjengelige"
+        }
+        return nearestStores.joinToString("\n") { it.friendlyPrint() }
     }
 
     data class Store(
