@@ -6,3 +6,4 @@ build
 .idea
 .serverless
 deploy.sh
+node_modules

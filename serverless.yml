@@ -1,7 +1,8 @@
 service: vine-watcher
 
-# You can pin your service to only deploy with a specific Serverless version
-# frameworkVersion: "=X.X.X"
+custom:
+  warmup:
+    prewarm: true
 
 provider:
   name: aws
@@ -30,6 +31,16 @@ provider:
         Fn::GetAtt:
           - WineTable
           - Arn
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource:
+        - Fn::Join:
+            - ':'
+            - - arn:aws:lambda
+              - Ref: AWS::Region
+              - Ref: AWS::AccountId
+              - function:${self:service}-${opt:stage, self:provider.stage}-*
 
 package:
   artifact: build/libs/vine-watcher-dev-all.jar
@@ -47,6 +58,8 @@ functions:
 
   vinewatcher-slack-webhook:
     handler: vine.watcher.slackhook.SlackCommandRequestHandler
+    warmup:
+      enabled: true
     events:
       - http:
           path: event/receive
@@ -92,3 +105,6 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
 
+
+plugins:
+  - serverless-plugin-warmup
