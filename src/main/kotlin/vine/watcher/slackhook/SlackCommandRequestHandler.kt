@@ -31,7 +31,7 @@ class SlackCommandRequestHandler(
         sqsClient.sendMessage(queueUrl, args)
 
         return ApiGatewayResponse.builder()
-                .rawBody("Da har vi putta ${args} på køa!")
+                .rawBody("Da har vi putta `$args` på køa!")
                 .build()
     }
 
