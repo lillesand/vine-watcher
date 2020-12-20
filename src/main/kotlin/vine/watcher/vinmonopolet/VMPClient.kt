@@ -4,18 +4,34 @@
 package vine.watcher.vinmonopolet
 
 import com.beust.klaxon.Klaxon
+import okhttp3.internal.closeQuietly
+import org.apache.http.client.config.CookieSpecs
+import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.utils.URIBuilder
-import org.apache.http.impl.client.HttpClients
+import org.apache.http.impl.client.HttpClientBuilder
 import kotlin.system.measureTimeMillis
 
 
 class VMPClient {
 
     private val klaxon = Klaxon()
-    private val httpclient = HttpClients.createDefault()
+    private val requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build()
+    private val httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build()
+    private var cookieInited = false
+
+    /**
+     * VMP has a bug where the original for the first page load isn't preserved during redirects to queue-it.
+     * Thus, we need to do a silent GET first in order to get some mandatory cookies set.
+     */
+    private fun initCookie() {
+        if (cookieInited) return
+
+        httpclient.execute(HttpGet(URIBuilder("https://www.vinmonopolet.no/").build())).closeQuietly()
+    }
 
     fun getStoreStatus(articleId: String): VinmonopoletAvailabilityResponse {
+        initCookie()
         val uri = URIBuilder("https://www.vinmonopolet.no/api/products/${articleId}/stock?pageSize=10&currentPage=0&fields=BASIC&latitude=59.9492182&longitude=10.7683369")
 
         val response = httpclient.execute(HttpGet(uri.build()))
@@ -26,6 +42,7 @@ class VMPClient {
     }
 
     fun getWineInfo(articleId: String): VinmonopoletSearchResponse {
+        initCookie()
         val uri = URIBuilder("https://www.vinmonopolet.no/api/search?q=${articleId}&searchType=product&fields=FULL&pageSize=1").build()
 
         val response = httpclient.execute(HttpGet(uri))

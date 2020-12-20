@@ -16,23 +16,11 @@ data class VinmonopoletSearchResponse(
         )
         data class Product(
                 val availability: Availability,
-                val availableForPickup: Boolean,
-                val buyable: Boolean,
                 val code: String,
-                val images: List<Image>,
-                val inStockSupplier: Boolean,
-                val litrePrice: LitrePrice,
-                val main_category: MainCategory,
-                val main_country: MainCountry,
-                val main_producer: MainProducer,
                 val name: String,
                 val price: Price,
-                val product_selection: String,
                 val status: String,
-                val stock: Stock,
-                val url: String,
-                val volume: Volume,
-                val volumePricesFlag: Boolean
+                val volume: Volume
         ) {
             data class Availability(
                     val deliveryAvailability: DeliveryAvailability,
@@ -54,44 +42,9 @@ data class VinmonopoletSearchResponse(
                     )
                 }
             }
-
-            data class Image(
-                val format: String,
-                val imageType: String,
-                val url: String
-            )
-
-            data class LitrePrice(
-                val currencyIso: String,
-                val formattedValue: String,
-                val priceType: String,
-                val readableValue: String,
-                val value: Double
-            )
-
-            data class MainCategory(
-                val name: String?
-            )
-
-            data class MainCountry(
-                val name: String?
-            )
-
-            data class MainProducer(
-                val name: String?
-            )
-
             data class Price(
-                val currencyIso: String,
                 val formattedValue: String,
-                val priceType: String,
-                val readableValue: String,
-                val value: Double
-            )
-
-            data class Stock(
-                val stockLevel: Int,
-                val stockLevelStatus: String
+                val readableValue: String
             )
 
             data class Volume(
